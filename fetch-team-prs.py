@@ -789,14 +789,14 @@ def split_prs_issues(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
 def build_issues_report_view(issues_df: pd.DataFrame) -> pd.DataFrame:
     """
     Report tab requested by user: Issues only, columns:
-      author, repo, url, created_at, updated_at
+      author, repo, url, state, created_at, updated_at
 
     Additionally: exclude issues assigned to any of USERS.
     """
     if issues_df is None or issues_df.empty:
         return pd.DataFrame()
 
-    wanted = ["author", "repo", "url", "created_at", "updated_at"]
+    wanted = ["author", "repo", "url", "state", "created_at", "updated_at"]
     cols = [c for c in wanted if c in issues_df.columns]
     out = issues_df.copy()
 
@@ -819,12 +819,26 @@ def build_issues_report_view(issues_df: pd.DataFrame) -> pd.DataFrame:
     if cols:
         out = out[cols]
 
-    # Sort requested: created_at desc (latest -> oldest).
+    # Sort requested: state (open first), then created_at desc (latest -> oldest).
     # Use parsed datetime so ordering is chronological, not string-based.
+    sort_cols = []
+    ascending_flags = []
+    
+    if "state" in out.columns:
+        # "open" -> 0, "closed" -> 1
+        out["_state_sort"] = out["state"].apply(lambda x: 0 if str(x).lower() == "open" else 1)
+        sort_cols.append("_state_sort")
+        ascending_flags.append(True)
+
     if "created_at" in out.columns:
         out["_created_sort"] = out["created_at"].apply(lambda x: _parse_iso8601(x) if isinstance(x, str) else None)
-        out = out.sort_values(by=["_created_sort"], ascending=[False], kind="mergesort")
-        out = out.drop(columns=["_created_sort"])
+        sort_cols.append("_created_sort")
+        ascending_flags.append(False)
+
+    if sort_cols:
+        out = out.sort_values(by=sort_cols, ascending=ascending_flags, kind="mergesort")
+        drop_cols = [c for c in ["_state_sort", "_created_sort"] if c in out.columns]
+        out = out.drop(columns=drop_cols)
 
     return out.reset_index(drop=True)
 
