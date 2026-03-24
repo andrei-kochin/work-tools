@@ -1060,8 +1060,8 @@ def main() -> int:
                         state=sub_state,
                         org=None,
                         repos=[],
-                        updated_since=updated_since_dt if sub_state == "open" else None,
-                        closed_since=closed_since_dt if sub_state == "closed" else None,
+                        updated_since=pr_updated_since,
+                        closed_since=pr_closed_since,
                         item_type="pr",
                     )
                     print(
@@ -1141,8 +1141,8 @@ def main() -> int:
                     state=sub_state,
                     org=org_to_use,
                     repos=repos_to_use,
-                    updated_since=updated_since_dt if sub_state == "open" else None,
-                    closed_since=closed_since_dt if sub_state == "closed" else None,
+                    updated_since=pr_updated_since,
+                    closed_since=pr_closed_since,
                     item_type="issue",
                 )
                 try:
@@ -1169,8 +1169,8 @@ def main() -> int:
                             state=sub_state,
                             org=None,
                             repos=[],
-                            updated_since=updated_since_dt if sub_state == "open" else None,
-                            closed_since=closed_since_dt if sub_state == "closed" else None,
+                            updated_since=pr_updated_since,
+                            closed_since=pr_closed_since,
                             item_type="issue",
                         )
                         print(
