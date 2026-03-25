@@ -45,6 +45,13 @@ USERS: List[str] = []
 
 # Load from config.yaml if present
 CONFIG_YAML_PATH = "config.yaml"
+if "--config" in sys.argv:
+    try:
+        idx = sys.argv.index("--config")
+        CONFIG_YAML_PATH = sys.argv[idx + 1]
+    except IndexError:
+        pass
+
 if os.path.exists(CONFIG_YAML_PATH):
     with open(CONFIG_YAML_PATH, "r", encoding="utf-8") as f:
         try:
