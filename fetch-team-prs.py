@@ -43,32 +43,6 @@ TOKEN: str = ""
 # GitHub usernames to fetch PRs/issues for. Can also set GITHUB_USERS env var (comma-separated).
 USERS: List[str] = []
 
-# Load from config.yaml if present
-CONFIG_YAML_PATH = "config.yaml"
-if "--config" in sys.argv:
-    try:
-        idx = sys.argv.index("--config")
-        CONFIG_YAML_PATH = sys.argv[idx + 1]
-    except IndexError:
-        pass
-
-if os.path.exists(CONFIG_YAML_PATH):
-    with open(CONFIG_YAML_PATH, "r", encoding="utf-8") as f:
-        try:
-            config_data = yaml.safe_load(f) or {}
-            if "TOKEN" in config_data:
-                TOKEN = config_data["TOKEN"]
-            if "USERS" in config_data:
-                USERS = config_data["USERS"]
-        except Exception as e:
-            print(f"WARNING: Failed to parse {CONFIG_YAML_PATH}: {e}", file=sys.stderr)
-
-if not TOKEN:
-    TOKEN = os.environ.get("GITHUB_TOKEN", "")
-
-if not USERS:
-    env_users = os.environ.get("GITHUB_USERS", "")
-    USERS = [u.strip() for u in env_users.split(",") if u.strip()]
 
 # Include issues opened by team members (in addition to PRs).
 INCLUDE_ISSUES: bool = True
@@ -139,6 +113,37 @@ DELTA_ONLY_IF_OUT_EXISTS: bool = True
 # If Search API misses private PRs, enable this to also scan configured REPOS via Pulls API.
 # (Only scans repos listed in REPOS, not "all repos you can access".)
 FALLBACK_SCAN_REPOS: bool = True
+
+# Load from config.yaml if present
+CONFIG_YAML_PATH = "config.yaml"
+if "--config" in sys.argv:
+    try:
+        idx = sys.argv.index("--config")
+        CONFIG_YAML_PATH = sys.argv[idx + 1]
+    except IndexError:
+        pass
+
+if os.path.exists(CONFIG_YAML_PATH):
+    with open(CONFIG_YAML_PATH, "r", encoding="utf-8") as f:
+        try:
+            config_data = yaml.safe_load(f) or {}
+            if "TOKEN" in config_data:
+                TOKEN = config_data["TOKEN"]
+            if "USERS" in config_data:
+                USERS = config_data["USERS"]
+            if "OUT_XLSX" in config_data:
+                OUT_XLSX = config_data["OUT_XLSX"]
+            if "PREVIOUS_WEEK_XLSX" in config_data:
+                PREVIOUS_WEEK_XLSX = config_data["PREVIOUS_WEEK_XLSX"]
+        except Exception as e:
+            print(f"WARNING: Failed to parse {CONFIG_YAML_PATH}: {e}", file=sys.stderr)
+
+if not TOKEN:
+    TOKEN = os.environ.get("GITHUB_TOKEN", "")
+
+if not USERS:
+    env_users = os.environ.get("GITHUB_USERS", "")
+    USERS = [u.strip() for u in env_users.split(",") if u.strip()]
 
 
 def _utc_now() -> dt.datetime:
