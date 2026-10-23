@@ -18,3 +18,13 @@ A Python script to fetch GitHub Pull Requests and Issues authored by a specified
    ```bash
    python fetch-team-prs.py
    ```
+
+### `compare_docker_images.py`
+Compare two container images and report which pull requests are in the difference. The default report classifies files as unmerged, already in a git baseline, or unpublished. Image layers and GitHub responses are cached next to the script, so a later run can pass `--offline`.
+
+**Usage:**
+```bash
+python compare_docker_images.py IMAGE1 IMAGE2 --aiter v0.1.26 --out report.md
+```
+
+Python 3.11+ and the GitHub CLI (`gh`) are required. Docker is required only with `--engine docker`. No third-party Python packages.
